@@ -29,9 +29,29 @@ update the docker-compose.yml `image` reference for all the redis-1,2,3,etc serv
 
 then commit and push...
 
-```
+```sh
 git commit -m 'adding new version: 6.0-rc3' .
 
+git push origin version/6.0-rc3
+```
+
+### Changes to readme across versions
+If changes need to be made to the readme... start with the master branch, make the changes and then checkout each branch, run git fetch and update the specific file.
+
+example, after readme.md in master has been updated:
+
+```sh
+git commit -m 'updated readme' .
+git push origin master
+```
+
+then switch branches
+
+```sh
+git checkout version/6.0-rc3
+git fetch
+git checkout origin/master -- readme.md
+git commit -m 'update readme' .
 git push origin version/6.0-rc3
 ```
 
@@ -50,6 +70,12 @@ docker-compose up
 **stop**
 
 ctl-c in running console
+
+then to completely reset:
+
+```sh
+docker-compose down
+```
 
 ### background (detached mode)
 
