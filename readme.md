@@ -41,20 +41,9 @@ If changes need to be made to the readme... start with the master branch, make t
 example, after readme.md in master has been updated:
 
 ```sh
-git commit -m 'updated readme' .
-git push origin master
+git commit -m 'updated readme' readme.md
+git push -all origin
 ```
-
-then switch branches
-
-```sh
-git checkout version/6.0-rc3
-git fetch
-git checkout origin/master -- readme.md
-git commit -m 'update readme' .
-git push origin version/6.0-rc3
-```
-
 
 ## running nodes
 It's just using docker-compose... so do your own magic if you know it.
