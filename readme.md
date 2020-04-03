@@ -40,8 +40,9 @@ If changes need to be made to the readme we want to update that across versions 
 
 ```sh
 git commit -m 'updated readme' readme.md
-git push -all origin
-git fetch
+git push origin master
+git push origin version/5.0.8
+git push origin version/6.0-rc3
 ```
 
 ## running nodes
