@@ -3,48 +3,6 @@
 - will start up 6 docker redis containers with custom ports and internal IPs
 - allows you to setup 3 masters with replication
 
-## versions
-
-```sh
-git checkout version/5.0.8
-```
-
-If you want to setup a different version not represented already...just create a new branch for it: version/(redis-version) 
-
-```sh
-git checkout -b version/6.0-rc3
-```
-
-update the docker-compose.yml `image` reference for all the redis-1,2,3,etc services (make sure all 6 are updated)...e.g.
-
-```yaml
-...
-  redis1:
-    container_name: redis-1
-    image: redis:6.0-rc3
-    ports: 
-      - 7001:7001
-...
-```
-
-then commit and push...
-
-```sh
-git commit -m 'adding new version: 6.0-rc3' .
-
-git push origin version/6.0-rc3
-```
-
-### Changes to readme across versions
-If changes need to be made to the readme we want to update that across versions but not use merge and overwrite the docker-compose across versions.
-
-```sh
-git commit -m 'updated readme' readme.md
-git push origin master
-git push origin version/5.0.8
-git push origin version/6.0-rc3
-```
-
 ## running nodes
 It's just using docker-compose... so do your own magic if you know it.
 
@@ -184,6 +142,17 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
       2) (integer) 7005
       3) "d74891990280d81b5917094cf3556045fdd7d767"
 ```
+
+## versions
+Current simple solution was just to create a separate docker-compose file with the redis image version needed.  This could be enhanced to be more sophisticated in the future.
+
+In order to use a different docker-compose file you just need to specify the `-f` option with the filename on the docker-compose up command.
+
+```sh
+docker-compose -f docker-compose-6.0-rc3.yml up
+```
+
+If another version is needed just copy the docker-compose and change the image in each of the redis-1 - redis-7 services.
 
 ## References (aka stole from...) 
 - https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/
