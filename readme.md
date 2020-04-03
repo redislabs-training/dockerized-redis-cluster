@@ -36,10 +36,39 @@ git push origin version/6.0-rc3
 ```
 
 
-## start up nodes
+## running nodes
+It's just using docker-compose... so do your own magic if you know it.
+
+### foreground (will include logs)
+
+**start**
 
 ```sh
 docker-compose up
+```
+
+**stop**
+
+ctl-c in running console
+
+### background (detached mode)
+
+**start**
+
+```sh
+docker-compose up --detach
+```
+
+**logs** 
+
+```sh
+docker-compose logs -f
+```
+
+**stop**
+
+```sh
+docker-compose down
 ```
 
 ## create cluster
