@@ -36,13 +36,12 @@ git push origin version/6.0-rc3
 ```
 
 ### Changes to readme across versions
-If changes need to be made to the readme... start with the master branch, make the changes and then checkout each branch, run git fetch and update the specific file.
-
-example, after readme.md in master has been updated:
+If changes need to be made to the readme we want to update that across versions but not use merge and overwrite the docker-compose across versions.
 
 ```sh
 git commit -m 'updated readme' readme.md
 git push -all origin
+git fetch
 ```
 
 ## running nodes
