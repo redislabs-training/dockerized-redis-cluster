@@ -1,7 +1,40 @@
 # Simple Redis OSS Cluster via Docker Compose
 
-- will start up 6 docker containers with custom ports and internal IPs
+- will start up 6 docker redis containers with custom ports and internal IPs
 - allows you to setup 3 masters with replication
+
+## versions
+
+```sh
+git checkout version/5.0.8
+```
+
+If you want to setup a different version not represented already...just create a new branch for it: version/(redis-version) 
+
+```sh
+git checkout -b version/6.0-rc3
+```
+
+update the docker-compose.yml `image` reference for all the redis-1,2,3,etc services (make sure all 6 are updated)...e.g.
+
+```yaml
+...
+  redis1:
+    container_name: redis-1
+    image: redis:6.0-rc3
+    ports: 
+      - 7001:7001
+...
+```
+
+then commit and push...
+
+```
+git commit -m 'adding new version: 6.0-rc3' .
+
+git push origin version/6.0-rc3
+```
+
 
 ## start up nodes
 
