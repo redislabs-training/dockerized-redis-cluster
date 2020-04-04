@@ -138,10 +138,9 @@ M: 8d8382932ef8ab5ee2b679744bb64aad35ff6462 10.0.0.12:7002
 
 **verify**
 
-Notice when using redis-cli outside of the docker network use the host of **0.0.0.0**
 
 ```sh
-❯ redis-cli -p 7001 -h 0.0.0.0
+❯ redis-cli -p 7001
 0.0.0.0:7001> cluster nodes
 1ce3615135775193d123b85f709986d99ef7fdcc 10.0.0.16:7006@17006 slave 8d8382932ef8ab5ee2b679744bb64aad35ff6462 0 1585947900522 6 connected
 d74891990280d81b5917094cf3556045fdd7d767 10.0.0.15:7005@17005 slave f0ab4bc5127688e5486f83f4feec56ebbcfa190e 0 1585947901135 5 connected
@@ -152,29 +151,29 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
 0.0.0.0:7001>
 0.0.0.0:7001> cluster slots
 1) 1) (integer) 10923
-   2) (integer) 16383
-   3) 1) "10.0.0.13"
-      2) (integer) 7003
-      3) "623736d0b41e9814331df6efbf7bb7aedafca5e3"
-   4) 1) "10.0.0.14"
-      2) (integer) 7004
-      3) "18ff1e20e902b0cd54e24d86a163c3636b02a5c3"
+   1) (integer) 16383
+   2) 1) "10.0.0.13"
+      1) (integer) 7003
+      2) "623736d0b41e9814331df6efbf7bb7aedafca5e3"
+   3) 1) "10.0.0.14"
+      1) (integer) 7004
+      2) "18ff1e20e902b0cd54e24d86a163c3636b02a5c3"
 2) 1) (integer) 5461
-   2) (integer) 10922
-   3) 1) "10.0.0.12"
-      2) (integer) 7002
-      3) "8d8382932ef8ab5ee2b679744bb64aad35ff6462"
-   4) 1) "10.0.0.16"
-      2) (integer) 7006
-      3) "1ce3615135775193d123b85f709986d99ef7fdcc"
+   1) (integer) 10922
+   2) 1) "10.0.0.12"
+      1) (integer) 7002
+      2) "8d8382932ef8ab5ee2b679744bb64aad35ff6462"
+   3) 1) "10.0.0.16"
+      1) (integer) 7006
+      2) "1ce3615135775193d123b85f709986d99ef7fdcc"
 3) 1) (integer) 0
-   2) (integer) 5460
-   3) 1) "10.0.0.11"
-      2) (integer) 7001
-      3) "f0ab4bc5127688e5486f83f4feec56ebbcfa190e"
-   4) 1) "10.0.0.15"
-      2) (integer) 7005
-      3) "d74891990280d81b5917094cf3556045fdd7d767"
+   1) (integer) 5460
+   2) 1) "10.0.0.11"
+      1) (integer) 7001
+      2) "f0ab4bc5127688e5486f83f4feec56ebbcfa190e"
+   3) 1) "10.0.0.15"
+      1) (integer) 7005
+      2) "d74891990280d81b5917094cf3556045fdd7d767"
 ```
 
 ## References (aka stole from...) 
