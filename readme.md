@@ -138,6 +138,8 @@ M: 8d8382932ef8ab5ee2b679744bb64aad35ff6462 10.0.0.12:7002
 
 **verify**
 
+Notice when using redis-cli outside of the docker network use the host of **0.0.0.0**
+
 ```sh
 ❯ redis-cli -p 7001 -h 0.0.0.0
 0.0.0.0:7001> cluster nodes
@@ -178,5 +180,3 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
 ## References (aka stole from...) 
 - https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/
 - https://redis.io/topics/cluster-tutorial
-
-
