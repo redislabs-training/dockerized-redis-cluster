@@ -185,6 +185,8 @@ NOTE: You must run the command to create the cluster first before using the pyth
 `py-src/test.py`
 
 **testing**  
+The *py-src* directory is mapped to */usr/local/cluster-tester* to run the test.py script you can run like this:
+
 ```
 docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
 ```
