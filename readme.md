@@ -18,10 +18,10 @@ cp env-orig .env
 
 By default the version is the 'latest' OSS container.  The docker-compose config is getting this from an environment variable: `REDIS_VER` which is coming from the `.env` file you just created previously.
 
-**using .env file**
+**using .env file**  
 You can change the version by simply commenting/uncommenting the version you wish to use.
 
-**using export**
+**using export**  
 You can also override the default or .env by using export to set the version.
 
 ```
