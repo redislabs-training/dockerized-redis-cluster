@@ -101,3 +101,13 @@ services:
     networks:
       redisnet:
         ipv4_address: 10.0.0.16
+
+  tester:
+    container_name: cluster_tester
+    image: python:3.8-alpine3.10
+    volumes:
+      - ./py-src:/usr/local/cluster-tester:z
+    entrypoint: /usr/local/cluster-tester/docker-entrypoint.sh
+    networks:
+      redisnet:
+        ipv4_address: 10.0.0.20

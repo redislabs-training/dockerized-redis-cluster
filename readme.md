@@ -2,6 +2,7 @@
 
 - will start up 6 docker redis containers with custom ports and internal IPs
 - allows you to setup 3 masters with replication
+- creates a python docker container on the same network with a source file you can edit and run
 
 ## running nodes
 It's just using docker-compose... so do your own magic if you know it.
@@ -175,6 +176,21 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
       1) (integer) 7005
       2) "d74891990280d81b5917094cf3556045fdd7d767"
 ```
+## Python Client Test Container
+Since the cluster is within the docker network to properly test you will need to be able to have a client connect within that network.  There is one additional container started that is part of that same network with a source file mapped in to be able to run tests.
+
+NOTE: You must run the command to create the cluster first before using the python client.
+
+**source**:  
+`py-src/test.py`
+
+**testing**  
+```
+docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
+```
+
+**other languages**
+If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis-oss-cluster_redisnet* and you are connecting your client to the 10. IP like the test.py does.
 
 ## References (aka stole from...) 
 - https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/
