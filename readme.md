@@ -6,6 +6,34 @@
 ## running nodes
 It's just using docker-compose... so do your own magic if you know it.
 
+### IMPORTANT: do this first
+
+Copy the `env-orig` to `.env`...
+
+```sh
+cp env-orig .env
+```
+
+### Changing OSS version
+
+By default the version is the 'latest' OSS container.  The docker-compose config is getting this from an environment variable: `REDIS_VER` which is coming from the `.env` file you just created previously.
+
+**using .env file**
+You can change the version by simply commenting/uncommenting the version you wish to use.
+
+**using export**
+You can also override the default or .env by using export to set the version.
+
+```
+export REDIS_VER=4
+```
+
+then run docker-compose... to revert
+
+```
+unset REDIS_VER
+```
+
 ### foreground (will include logs)
 
 **start**
@@ -142,17 +170,6 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
       2) (integer) 7005
       3) "d74891990280d81b5917094cf3556045fdd7d767"
 ```
-
-## versions
-Current simple solution was just to create a separate docker-compose file with the redis image version needed.  This could be enhanced to be more sophisticated in the future.
-
-In order to use a different docker-compose file you just need to specify the `-f` option with the filename on the docker-compose up command.
-
-```sh
-docker-compose -f docker-compose-6.0-rc3.yml up
-```
-
-If another version is needed just copy the docker-compose and change the image in each of the redis-1 - redis-7 services.
 
 ## References (aka stole from...) 
 - https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/

@@ -12,7 +12,7 @@ services:
 
   redis1:
     container_name: redis-1
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7001:7001
     volumes:
@@ -26,7 +26,7 @@ services:
 
   redis2:
     container_name: redis-2
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7002:7002
     volumes:
@@ -42,7 +42,7 @@ services:
 
   redis3:
     container_name: redis-3
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7003:7003
     volumes:
@@ -58,7 +58,7 @@ services:
   
   redis4:
     container_name: redis-4
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7004:7004
     volumes:
@@ -72,7 +72,7 @@ services:
 
   redis5:
     container_name: redis-5
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7005:7005
     volumes:
@@ -88,7 +88,7 @@ services:
 
   redis6:
     container_name: redis-6
-    image: redis:5.0.8
+    image: redis:${REDIS_VER}
     ports: 
       - 7006:7006
     volumes:
