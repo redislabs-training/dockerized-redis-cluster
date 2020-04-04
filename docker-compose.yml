@@ -16,7 +16,7 @@ services:
     ports: 
       - 7001:7001
     volumes:
-      - ./redis-1.conf:/etc/redis/redis.conf
+      - ./configs/redis-1.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
@@ -30,7 +30,7 @@ services:
     ports: 
       - 7002:7002
     volumes:
-      - ./redis-2.conf:/etc/redis/redis.conf
+      - ./configs/redis-2.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
@@ -46,7 +46,7 @@ services:
     ports: 
       - 7003:7003
     volumes:
-      - ./redis-3.conf:/etc/redis/redis.conf
+      - ./configs/redis-3.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
@@ -62,7 +62,7 @@ services:
     ports: 
       - 7004:7004
     volumes:
-      - ./redis-4.conf:/etc/redis/redis.conf
+      - ./configs/redis-4.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
@@ -76,7 +76,7 @@ services:
     ports: 
       - 7005:7005
     volumes:
-      - ./redis-5.conf:/etc/redis/redis.conf
+      - ./configs/redis-5.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
@@ -92,7 +92,7 @@ services:
     ports: 
       - 7006:7006
     volumes:
-      - ./redis-6.conf:/etc/redis/redis.conf
+      - ./configs/redis-6.conf:/etc/redis/redis.conf
     command: 
       - redis-server
       - /etc/redis/redis.conf
