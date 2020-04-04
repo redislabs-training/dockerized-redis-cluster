@@ -74,6 +74,8 @@ docker-compose down
 
 ## create cluster
 
+Use this command to create the cluster:
+
 ```sh
 docker exec -it redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1 
 ```
