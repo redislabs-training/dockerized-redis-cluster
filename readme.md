@@ -192,7 +192,7 @@ The *py-src* directory is mapped to */usr/local/cluster-tester* to run the test.
 docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
 ```
 
-**other languages**
+**other languages**  
 If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis-oss-cluster_redisnet* and you are connecting your client to the 10. IP like the test.py does.
 
 ## References (aka stole from...) 
