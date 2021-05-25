@@ -103,7 +103,6 @@ services:
         ipv4_address: 10.0.0.16
 
   app:
-    container_name: cluster_tester
     image: python:3.8-alpine3.10
     volumes:
       - ./app:/usr/local/cluster-tester:z

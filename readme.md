@@ -177,6 +177,10 @@ f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 
       2) "d74891990280d81b5917094cf3556045fdd7d767"
 ```
 ## Python Client Test Container
+
+This is provided to be able to try out redis cluster from within an application and what it would look like.
+
+
 Since the cluster is within the docker network to properly test you will need to be able to have a client connect within that network.  There is one additional container started that is part of that same network with a source file mapped in to be able to run tests.
 
 NOTE: You must run the command to create the cluster first before using the python client.
@@ -189,7 +193,7 @@ You can put your own python code in *app* or just extend the basic exmaple alrea
 The *app* directory is mapped to */usr/local/cluster-tester* to run the test.py script you execute:
 
 ```
-docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
+docker-compose exec app python /usr/local/app/test.py
 ```
 
 **other languages**  
