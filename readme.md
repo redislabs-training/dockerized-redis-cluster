@@ -182,7 +182,7 @@ Since the cluster is within the docker network to properly test you will need to
 NOTE: You must run the command to create the cluster first before using the python client.
 
 **source**:
-You can put your own python code in *py-src* or just extend the basic exmaple already included:
+You can put your own python code in *app* or just extend the basic exmaple already included:
 `app/test.py`
 
 **testing**  
@@ -193,8 +193,9 @@ docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
 ```
 
 **other languages**  
-If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis-oss-cluster_redisnet* and you are connecting your client to the 10. IP like the test.py does.
+If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis-oss-cluster_redisclusternet* and you are connecting your client to the 10. IP like the test.py does.
 
 ## References (aka stole from...) 
+
 - https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/
 - https://redis.io/topics/cluster-tutorial
