@@ -183,10 +183,10 @@ NOTE: You must run the command to create the cluster first before using the pyth
 
 **source**:
 You can put your own python code in *py-src* or just extend the basic exmaple already included:
-`py-src/test.py`
+`app/test.py`
 
 **testing**  
-The *py-src* directory is mapped to */usr/local/cluster-tester* to run the test.py script you execute:
+The *app* directory is mapped to */usr/local/cluster-tester* to run the test.py script you execute:
 
 ```
 docker exec -it cluster_tester python /usr/local/cluster-tester/test.py
