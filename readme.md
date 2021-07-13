@@ -193,7 +193,13 @@ You can put your own python code in *app* or just extend the basic exmaple alrea
 The *app* directory is mapped to */usr/local/cluster-tester* to run the test.py script you execute:
 
 ```
-docker-compose exec app python /usr/local/app/test.py
+docker-compose exec app python /usr/local/cluster-tester/test.py
+```
+
+To get a shell prompt in the test container...
+
+```
+docker-compose exec app sh
 ```
 
 **other languages**  

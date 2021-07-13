@@ -21,7 +21,7 @@ services:
       - redis-server
       - /etc/redis/redis.conf
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.11
 
   redis2:
@@ -37,7 +37,7 @@ services:
     depends_on:
       - redis1
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.12
 
   redis3:
@@ -53,7 +53,7 @@ services:
     depends_on:
       - redis2
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.13
   
   redis4:
@@ -67,7 +67,7 @@ services:
       - redis-server
       - /etc/redis/redis.conf
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.14
 
   redis5:
@@ -83,7 +83,7 @@ services:
     depends_on:
       - redis1
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.15
 
   redis6:
@@ -99,7 +99,7 @@ services:
     depends_on:
       - redis2
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.16
 
   app:
@@ -108,5 +108,5 @@ services:
       - ./app:/usr/local/cluster-tester:z
     entrypoint: /usr/local/cluster-tester/docker-entrypoint.sh
     networks:
-      redisnet:
+      redisclusternet:
         ipv4_address: 10.0.0.20
