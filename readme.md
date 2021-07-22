@@ -78,10 +78,22 @@ docker-compose down
 Use this command to create the cluster:
 
 ```sh
-docker exec -it redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1 
+docker exec -it redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1 --cluster-yes
 ```
 
+
 There will be a prompt to confirm you wish to *set this configuration* which you need to confirm by entering **yes** ... see example below.
+
+
+**docker compose vs docker-compose**
+
+If you start things up using `docker compose up -d` things will start up but the IPv4 IPs don't seem to get set.
+
+Toby came up with this work around which dynamically pulls the IPs from docker inspect and uses them on the cluster creation.
+
+```
+docker exec -it redis-1 redis-cli -p 7001 --cluster create $(for i in {1..6}; do docker inspect redis-$i --format '{{ $network := index .NetworkSettings.Networks "dockerized-redis-oss-cluster_redisclusternet"}}{{$network.IPAddress}}'; echo 700$i;  done | paste -d : - -) --cluster-replicas 1 --cluster-yes
+```
 
 **example**
 
@@ -204,6 +216,46 @@ docker-compose exec app sh
 
 **other languages**  
 If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis-oss-cluster_redisclusternet* and you are connecting your client to the 10. IP like the test.py does.
+
+**memtier**
+There is a memtier service commented out in the docker-compose if you would like to run that uncomment it.
+
+
+## Clusters of Various Sizes
+
+The TE team wanted to research different failure and failover scenarios with OSS cluster. So, included in this repo is a script to create docker Redis instances and a cluster.  If you are good with the docker compose stuff you don't need this.
+
+The create script takes in the number of masters and the number of replicas per master, starts a docker network, runs redis docker instances with unique IPs and ports on the docker network, and then creates an OSS cluster with replicas.  This command will create 3 masters and 3 replicas (1 replica for each master)... so 6 shards (redis docker containers in total).
+
+```
+./create_cluster.sh 3 1
+```
+
+This is not docker-compose so it will attempt to close down any existing docker-compose runs as well as clear up any previous runs of the script.
+
+There is also a delete script which takes the same parameters and removes containers and networks.
+
+```
+./delete_cluster.sh 3 1
+```
+
+** Connect the app or memtier **
+
+If you wanted to pair the Redis OSS cluster with another container, like the docker-compose has, to run python... or memtier you just need to run the container in the same network.
+
+After running `create_cluster.sh` start your container...
+
+Python App:
+
+```
+docker run --network redisclusternet -d --volumes $(pwd)/app:/usr/local/cluster-tester --entrypoint /usr/local/cluster-tester/docker-entrypoint.sh python:3.8-alpine3.10
+```
+
+Memtier (default settings pointing to redis-1 IP and port for starters)
+
+```
+docker run --network redisclusternet redislabs/memtier_benchmark:latest --cluster-mode -s 10.0.0.1 -p 7001
+```
 
 ## References (aka stole from...) 
 
