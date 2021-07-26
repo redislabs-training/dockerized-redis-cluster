@@ -33,7 +33,7 @@ docker network rm $DOCKER_NETWORK
 sleep 2
 
 echo "Create new network: ${DOCKER_NETWORK}"
-docker network create --driver=bridge --subnet=10.0.0.0/16 --gateway=10.0.1.1 $DOCKER_NETWORK
+docker network create --driver=bridge --subnet=10.0.0.0/24 --gateway=10.0.0.254 $DOCKER_NETWORK
 
 echo "Run redis instances:"
 
@@ -45,14 +45,47 @@ do
     else
         PORT=70$i
     fi
+	#docker run -d --name redis-$i --network $DOCKER_NETWORK \
+    #--ip 10.0.0.$i \
+    #-p $PORT:$PORT \
+    #--env REDIS_PORT=$PORT \
+    #--volume $(pwd)/logs/:/var/log/redis/ \
+    #--volume $(pwd)/configs/redis-template.conf:/etc/redis/redis.conf \
+    #redis:$REDIS_VER \
+    #redis-server /etc/redis/redis.conf --port $PORT --logfile "/var/log/redis/redis-${i}.log"
+
+	#docker run -d --name redis-$i --network $DOCKER_NETWORK \
+    #--ip 10.0.0.$i \
+    #-p $PORT:$PORT \
+    #--env REDIS_PORT=$PORT \
+    #--volume $(pwd)/logs/:/var/log/redis/ \
+    #redis:$REDIS_VER \
+    #redis-server \
+    #--port $PORT \
+    #--logfile  "/var/log/redis/redis-${i}.log" \
+    #--cluster-enabled yes \
+    #--cluster-config-file nodes.conf \
+    #--cluster-node-timeout 5000 \
+    #--appendonly yes \
+    #--loglevel debug \
+    #--cluster-replica-no-failover yes
+
 	docker run -d --name redis-$i --network $DOCKER_NETWORK \
     --ip 10.0.0.$i \
     -p $PORT:$PORT \
     --env REDIS_PORT=$PORT \
     --volume $(pwd)/logs/:/var/log/redis/ \
-    --volume $(pwd)/configs/redis-template.conf:/etc/redis/redis.conf \
     redis:$REDIS_VER \
-    redis-server /etc/redis/redis.conf --port $PORT --logfile "/var/log/redis/redis-${i}.log"
+    redis-server \
+    --port $PORT \
+    --logfile  "/var/log/redis/redis-${i}.log" \
+    --cluster-enabled yes \
+    --cluster-config-file nodes.conf \
+    --cluster-node-timeout 5000 \
+    --appendonly yes \
+    --loglevel debug
+
+
 done
 
 echo "Containers started!"
