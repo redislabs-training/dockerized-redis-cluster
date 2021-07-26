@@ -8,7 +8,9 @@ I added this so you could add sentinel to a simple Redis OSS cluster and see how
 docker build -t sentinel .
 ```
 
-## OSS cluster
+NOTE: I was just dynamically running containers without pre-building but with sentinel there are config re-writes that happen so this was getting sketchy with different instances mapping the same config in.
+
+## Start OSS cluster
 
 First create a three node cluster either by following the docker-compose instructions or using the shell script provided in the root of the repo.  Both are documented in the repo's readme.
 
