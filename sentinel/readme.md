@@ -12,7 +12,7 @@ NOTE: I was just dynamically running containers without pre-building but with se
 
 ## Start OSS cluster
 
-First create a three node cluster either by following the docker-compose instructions or using the shell script provided in the root of the repo.  Both are documented in the repo's readme.
+First create a three node cluster using the create cluster script.  This will create and use a 'redisclusternet' docker network that will also use when running sentinel.
 
 ```
 ./create_cluster.sh 3 1
@@ -35,3 +35,18 @@ docker run --name sentinel-2 -d --network redisclusternet -p 7702:6379 --volume 
 ```
 docker run --name sentinel-3 -d --network redisclusternet -p 7703:6379 --volume $(pwd)/logs/:/var/log/redis/ sentinel redis-server /etc/redis/sentinel.conf --logfile "/var/log/redis/sentinel-3.log" --sentinel
 ```
+
+# Clean up
+
+Delete the sentinels first..
+
+```
+docker rm -f sentinel-1 sentinel-2 sentinel-3
+```
+
+Delete the cluster
+
+```
+./delete_cluster.sh 3 1
+```
+
