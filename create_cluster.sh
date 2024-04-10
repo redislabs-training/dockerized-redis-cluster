@@ -8,10 +8,10 @@ TOTAL_INSTANCES=$((MASTERS+TOTAL_REPLICAS))
 DOCKER_NETWORK=redisclusternet
 
 if [ $((MASTERS%2)) -eq 0 ] || [ "$1" -le 2 ]; then
-    echo "ERROR - Redis OSS cluster requires a quorum of masters."
+    echo "ERROR - Redis cluster requires a quorum of masters."
     set -e;
 else
-    echo "Creating a Redis OSS cluster with ${MASTERS} masters and ${TOTAL_REPLICAS} replicas for a total of ${TOTAL_INSTANCES} 'nodes' or shards."
+    echo "Creating a Redis cluster with ${MASTERS} masters and ${TOTAL_REPLICAS} replicas for a total of ${TOTAL_INSTANCES} 'nodes' or shards."
 fi
 
 echo "Going to try to clean up everything from previous runs, but... can only do so much.  You may need to clean things up yourself and re-run."
