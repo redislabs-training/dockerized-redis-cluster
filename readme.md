@@ -1,4 +1,4 @@
-# Simple Redis Cluster via Docker Compose
+# Simple Redis CE Cluster via Docker Compose
 
 - will start up 6 docker redis containers with custom ports and internal IPs
 - allows you to setup 3 masters with replication
