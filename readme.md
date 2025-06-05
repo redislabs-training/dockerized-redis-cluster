@@ -1,263 +1,308 @@
-# Simple Redis CE Cluster via Docker Compose
+# Redis OSS Cluster via Docker Compose 🚀
 
-- will start up 6 docker redis containers with custom ports and internal IPs
-- allows you to setup 3 masters with replication
-- creates a python docker container on the same network with a source file you can edit and run
+**Fully automated Redis cluster setup with modern Docker Compose practices**
 
-## running nodes
-It's just using docker-compose... so do your own magic if you know it.
+This repository provides a complete Redis cluster testing environment that eliminates manual setup steps and provides comprehensive testing tools for learning and experimenting with Redis OSS clustering.
 
-### IMPORTANT: do this first
+## ✨ Features
 
-Copy the `env-orig` to `.env`...
+- 🔄 **Fully automated cluster initialization** - No manual `redis-cli` commands needed
+- 🏥 **Health checks & dependencies** - Services wait for dependencies to be ready  
+- 🎯 **Profile-based deployment** - Easy switching between different configurations
+- 🧪 **Comprehensive testing suite** - Extensive tests for cluster functionality
+- 🐍 **Python test environment** - Ready-to-use testing container
+- 🖥️ **Optional Web GUI** - Redis Insight for visual cluster management
+- ⚡ **Modern practices** - Latest Redis and Docker Compose features
 
-```sh
-cp env-orig .env
+## 🚀 Quick Start
+
+```bash
+# Start full 6-node cluster with automatic initialization and testing environment
+COMPOSE_PROFILES=full,init,app docker-compose up -d
+
+# Test the cluster (runs automatically after initialization)
+docker-compose exec app python simple_test.py
+
+# Run comprehensive test suite
+docker-compose exec app python connection.py
 ```
 
-### Changing version
+That's it! The cluster is automatically created and ready for testing.
 
-By default the version is the 'latest' container.  The docker-compose config is getting this from an environment variable: `REDIS_VER` which is coming from the `.env` file you just created previously.
+## 🎯 Configuration Options
 
-**using .env file**  
-You can change the version by simply commenting/uncommenting the version you wish to use.
+### Deployment Profiles
 
-**using export**  
-You can also override the default or .env by using export to set the version.
+Choose the setup that fits your needs:
 
-```
-export REDIS_VER=4
-```
-
-then run docker-compose... to revert
-
-```
-unset REDIS_VER
+**🔧 Development (3 masters only)**
+```bash
+COMPOSE_PROFILES=minimal,init,app docker-compose up -d
 ```
 
-### foreground (will include logs)
-
-**start**
-
-```sh
-docker-compose up
+**🏭 Production-like (6 nodes: 3 masters + 3 replicas)**
+```bash
+COMPOSE_PROFILES=full,init,app docker-compose up -d
 ```
 
-**stop**
-
-ctl-c in running console
-
-then to completely reset:
-
-```sh
-docker-compose down
+**🖥️ With Redis Insight Web GUI**
+```bash
+COMPOSE_PROFILES=full,init,app,insight docker-compose up -d
+# Access Redis Insight at http://localhost:8001
 ```
 
-### background (detached mode)
+### Environment Configuration
 
-**start**
-
-```sh
-docker-compose up --detach
+Copy the starter environment to `.env`:
+```bash
+cp env-starter .env
 ```
 
-**logs** 
+The environment file contains configuration options:
 
-```sh
-docker-compose logs -f
+```bash
+# Redis version
+REDIS_VERSION=7-alpine
+
+# Python version for test container  
+PYTHON_VERSION=3.11-alpine
+
+# Cluster configuration
+REPLICAS_PER_MASTER=1
+CLUSTER_NODES=10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006
+
+# Active profiles
+COMPOSE_PROFILES=full,init,app
 ```
 
-**stop**
+## 🧪 Testing
 
-```sh
-docker-compose down
+### Available Test Scripts
+
+The testing environment includes comprehensive Redis cluster tests:
+
+**Quick Connectivity Check**
+```bash
+docker-compose exec app python simple_test.py
 ```
+- Verifies cluster connection
+- Basic health check
+- Returns success/failure status
 
-## create cluster
-
-Use this command to create the cluster:
-
-```sh
-docker exec -it redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1 --cluster-yes
+**Comprehensive Test Suite**
+```bash
+docker-compose exec app python connection.py
 ```
+- Key distribution across shards
+- Cluster information and node status  
+- Hash tag functionality (keys with same tag → same shard)
+- Performance testing (1000 operations)
+- Different Redis data types (strings, lists, sets, hashes)
+- Key expiration testing
+- Pattern matching operations
+- Automatic cleanup
 
+### Interactive Testing
 
-There will be a prompt to confirm you wish to *set this configuration* which you need to confirm by entering **yes** ... see example below.
-
-
-**docker compose vs docker-compose**
-
-If you start things up using `docker compose up -d` things will start up but the IPv4 IPs don't seem to get set.
-
-Toby came up with this work around which dynamically pulls the IPs from docker inspect and uses them on the cluster creation.
-
-```
-docker exec -it redis-1 redis-cli -p 7001 --cluster create $(for i in {1..6}; do docker inspect redis-$i --format '{{ $network := index .NetworkSettings.Networks "dockerized-redis-cluster_redisclusternet"}}{{$network.IPAddress}}'; echo 700$i;  done | paste -d : - -) --cluster-replicas 1 --cluster-yes
-```
-
-**example**
-
-```sh
-❯ docker exec -it redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1
->>> Performing hash slots allocation on 6 nodes...
-Master[0] -> Slots 0 - 5460
-Master[1] -> Slots 5461 - 10922
-Master[2] -> Slots 10923 - 16383
-Adding replica 10.0.0.15:7005 to 10.0.0.11:7001
-Adding replica 10.0.0.16:7006 to 10.0.0.12:7002
-Adding replica 10.0.0.14:7004 to 10.0.0.13:7003
-M: f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001
-   slots:[0-5460] (5461 slots) master
-M: 8d8382932ef8ab5ee2b679744bb64aad35ff6462 10.0.0.12:7002
-   slots:[5461-10922] (5462 slots) master
-M: 623736d0b41e9814331df6efbf7bb7aedafca5e3 10.0.0.13:7003
-   slots:[10923-16383] (5461 slots) master
-S: 18ff1e20e902b0cd54e24d86a163c3636b02a5c3 10.0.0.14:7004
-   replicates 623736d0b41e9814331df6efbf7bb7aedafca5e3
-S: d74891990280d81b5917094cf3556045fdd7d767 10.0.0.15:7005
-   replicates f0ab4bc5127688e5486f83f4feec56ebbcfa190e
-S: 1ce3615135775193d123b85f709986d99ef7fdcc 10.0.0.16:7006
-   replicates 8d8382932ef8ab5ee2b679744bb64aad35ff6462
-Can I set the above configuration? (type 'yes' to accept): yes
->>> Nodes configuration updated
->>> Assign a different config epoch to each node
->>> Sending CLUSTER MEET messages to join the cluster
-Waiting for the cluster to join
-...
->>> Performing Cluster Check (using node 10.0.0.11:7001)
-M: f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001
-   slots:[0-5460] (5461 slots) master
-   1 additional replica(s)
-S: 1ce3615135775193d123b85f709986d99ef7fdcc 10.0.0.16:7006
-   slots: (0 slots) slave
-   replicates 8d8382932ef8ab5ee2b679744bb64aad35ff6462
-S: d74891990280d81b5917094cf3556045fdd7d767 10.0.0.15:7005
-   slots: (0 slots) slave
-   replicates f0ab4bc5127688e5486f83f4feec56ebbcfa190e
-M: 623736d0b41e9814331df6efbf7bb7aedafca5e3 10.0.0.13:7003
-   slots:[10923-16383] (5461 slots) master
-   1 additional replica(s)
-S: 18ff1e20e902b0cd54e24d86a163c3636b02a5c3 10.0.0.14:7004
-   slots: (0 slots) slave
-   replicates 623736d0b41e9814331df6efbf7bb7aedafca5e3
-M: 8d8382932ef8ab5ee2b679744bb64aad35ff6462 10.0.0.12:7002
-   slots:[5461-10922] (5462 slots) master
-   1 additional replica(s)
-[OK] All nodes agree about slots configuration.
->>> Check for open slots...
->>> Check slots coverage...
-[OK] All 16384 slots covered.
-```
-
-**verify**
-
-
-```sh
-❯ docker exec -it redis-1 redis-cli -p 7001
-0.0.0.0:7001> cluster nodes
-1ce3615135775193d123b85f709986d99ef7fdcc 10.0.0.16:7006@17006 slave 8d8382932ef8ab5ee2b679744bb64aad35ff6462 0 1585947900522 6 connected
-d74891990280d81b5917094cf3556045fdd7d767 10.0.0.15:7005@17005 slave f0ab4bc5127688e5486f83f4feec56ebbcfa190e 0 1585947901135 5 connected
-623736d0b41e9814331df6efbf7bb7aedafca5e3 10.0.0.13:7003@17003 master - 0 1585947900109 3 connected 10923-16383
-18ff1e20e902b0cd54e24d86a163c3636b02a5c3 10.0.0.14:7004@17004 slave 623736d0b41e9814331df6efbf7bb7aedafca5e3 0 1585947900522 4 connected
-8d8382932ef8ab5ee2b679744bb64aad35ff6462 10.0.0.12:7002@17002 master - 0 1585947899067 2 connected 5461-10922
-f0ab4bc5127688e5486f83f4feec56ebbcfa190e 10.0.0.11:7001@17001 myself,master - 0 1585947900000 1 connected 0-5460
-0.0.0.0:7001>
-0.0.0.0:7001> cluster slots
-1) 1) (integer) 10923
-   1) (integer) 16383
-   2) 1) "10.0.0.13"
-      1) (integer) 7003
-      2) "623736d0b41e9814331df6efbf7bb7aedafca5e3"
-   3) 1) "10.0.0.14"
-      1) (integer) 7004
-      2) "18ff1e20e902b0cd54e24d86a163c3636b02a5c3"
-2) 1) (integer) 5461
-   1) (integer) 10922
-   2) 1) "10.0.0.12"
-      1) (integer) 7002
-      2) "8d8382932ef8ab5ee2b679744bb64aad35ff6462"
-   3) 1) "10.0.0.16"
-      1) (integer) 7006
-      2) "1ce3615135775193d123b85f709986d99ef7fdcc"
-3) 1) (integer) 0
-   1) (integer) 5460
-   2) 1) "10.0.0.11"
-      1) (integer) 7001
-      2) "f0ab4bc5127688e5486f83f4feec56ebbcfa190e"
-   3) 1) "10.0.0.15"
-      1) (integer) 7005
-      2) "d74891990280d81b5917094cf3556045fdd7d767"
-```
-## Python Client Test Container
-
-This is provided to be able to try out redis cluster from within an application and what it would look like.
-
-
-Since the cluster is within the docker network to properly test you will need to be able to have a client connect within that network.  There is one additional container started that is part of that same network with a source file mapped in to be able to run tests.
-
-NOTE: You must run the command to create the cluster first before using the python client.
-
-**source**:
-You can put your own python code in *app* or just extend the basic exmaple already included:
-`app/test.py`
-
-**testing**  
-The *app* directory is mapped to */usr/local/cluster-tester* to run the test.py script you execute:
-
-```
-docker-compose exec app python /usr/local/cluster-tester/test.py
-```
-
-To get a shell prompt in the test container...
-
-```
+Access the test container for manual testing:
+```bash
 docker-compose exec app sh
+cd /usr/local/cluster-tester
+python  # Start Python interpreter with redis available
 ```
 
-**other languages**  
-If you don't want to use python... you could start up another container with your source and language of choice.  Just make sure it's on the same docker network: *redis--cluster_redisclusternet* and you are connecting your client to the 10. IP like the test.py does.
+## 📋 Management Commands
 
-**memtier**
-There is a memtier service commented out in the docker-compose if you would like to run that uncomment it.
+### Monitoring
 
-
-## Clusters of Various Sizes
-
-The TE team wanted to research different failure and failover scenarios with cluster. So, included in this repo is a script to create docker Redis instances and a cluster.  If you are good with the docker compose stuff you don't need this.
-
-The create script takes in the number of masters and the number of replicas per master, starts a docker network, runs redis docker instances with unique IPs and ports on the docker network, and then creates a cluster with replicas.  This command will create 3 masters and 3 replicas (1 replica for each master)... so 6 shards (redis docker containers in total).
-
-```
-./create_cluster.sh 3 1
+**Check cluster status**
+```bash
+docker-compose exec redis-1 redis-cli -p 7001 cluster info
+docker-compose exec redis-1 redis-cli -p 7001 cluster nodes
 ```
 
-This is not docker-compose so it will attempt to close down any existing docker-compose runs as well as clear up any previous runs of the script.
+**View logs**
+```bash
+# All services
+docker-compose logs -f
 
-There is also a delete script which takes the same parameters and removes containers and networks.
-
-```
-./delete_cluster.sh 3 1
-```
-
-** Connect the app or memtier **
-
-If you wanted to pair the Redis cluster with another container, like the docker-compose has, to run python... or memtier you just need to run the container in the same network.
-
-After running `create_cluster.sh` start your container...
-
-Python App:
-
-```
-docker run --network redisclusternet -d --volumes $(pwd)/app:/usr/local/cluster-tester --entrypoint /usr/local/cluster-tester/docker-entrypoint.sh python:3.8-alpine3.10
+# Specific services
+docker-compose logs -f cluster-init  # Initialization logs
+docker-compose logs -f app           # Test container logs
+docker-compose logs -f redis-1       # Individual Redis node
 ```
 
-Memtier (default settings pointing to redis-1 IP and port for starters)
+**Service status**
+```bash
+docker-compose ps
+```
+
+### Lifecycle Management
+
+**Stop cluster**
+```bash
+docker-compose down
+```
+
+**Complete cleanup** (removes data and logs)
+```bash
+docker-compose down -v
+rm -rf logs/
+```
+
+**Restart services**
+```bash
+docker-compose restart app           # Restart test container
+docker-compose restart redis-1       # Restart specific Redis node
+```
+
+## 🎯 What Makes This Setup Better
+
+### Before vs After
+
+**Old Manual Workflow:**
+1. Start containers manually
+2. Wait and guess when they're ready
+3. Run complex `redis-cli` cluster creation commands
+4. Manually manage dependencies and errors
+5. No standardized testing
+
+**Current Automated Workflow:**
+1. Single command: `COMPOSE_PROFILES=full,init,app docker-compose up -d`  
+2. Everything ready automatically with health checks
+3. Comprehensive testing tools included
+
+### Key Benefits
+
+✅ **Zero Manual Steps** - Fully automated cluster creation  
+✅ **Reliable Startup** - Health checks ensure proper initialization order  
+✅ **Flexible Configuration** - Profile-based deployment for different needs  
+✅ **Comprehensive Testing** - Ready-made test suite for learning  
+✅ **Modern Practices** - Latest Redis and Docker Compose features  
+✅ **Production-Ready** - Proper logging, monitoring, and error handling  
+✅ **Developer-Friendly** - Clear feedback and simple commands  
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**"Connection refused" errors**
+```bash
+# Check if cluster initialization completed
+docker-compose logs cluster-init
+
+# Verify all services are healthy
+docker-compose ps
+```
+
+**"CLUSTERDOWN Hash slot not served"**
+```bash
+# Cluster creation didn't complete properly, restart initialization
+docker-compose restart cluster-init
+docker-compose logs -f cluster-init
+```
+
+**Python import errors**
+```bash
+# Check if dependencies installed correctly
+docker-compose logs app
+docker-compose exec app pip list | grep redis
+```
+
+### Manual Cluster Creation (if needed)
+
+If automatic initialization fails, you can create the cluster manually:
+```bash
+docker-compose exec redis-1 redis-cli -p 7001 --cluster create 10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 --cluster-replicas 1 --cluster-yes
+```
+
+### Reset Everything
+
+For a complete fresh start:
+```bash
+docker-compose down -v
+rm -rf logs/
+COMPOSE_PROFILES=full,init,app docker-compose up -d
+```
+## 📁 Repository Structure
 
 ```
-docker run --network redisclusternet redislabs/memtier_benchmark:latest --cluster-mode -s 10.0.0.1 -p 7001
+├── docker-compose.yml          # Main automated cluster setup
+├── .env                       # Environment configuration  
+├── app/                       # Python testing environment
+│   ├── simple_test.py         # Quick connectivity check
+│   ├── connection.py          # Comprehensive test suite  
+│   ├── requirements.txt       # Python dependencies
+│   └── docker-entrypoint.sh   # Container initialization
+├── scripts/                   # Cluster management scripts
+│   ├── init-cluster.sh        # Automated cluster initialization
+│   └── cluster-status.sh      # Health monitoring
+├── logs/                      # Redis logs (created at runtime)
+├── legacy/                    # Archived legacy setup files
+│   ├── docker-compose.legacy.yml
+│   ├── create_cluster.sh
+│   ├── delete_cluster.sh
+│   └── configs/               # Static config files
+└── README.md                  # This documentation
 ```
 
-## References (aka stole from...) 
+## 🔧 Advanced Usage
 
-- https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/
-- https://redis.io/topics/cluster-tutorial
+### Custom Redis Configuration
+
+To modify Redis settings, edit the command parameters in `docker-compose.yml`:
+
+```yaml
+command: >
+  redis-server
+  --port 7001
+  --cluster-enabled yes
+  --cluster-config-file nodes.conf
+  --cluster-node-timeout 5000
+  --appendonly yes
+  --bind 0.0.0.0
+  --protected-mode no
+  # Add your custom settings here
+```
+
+### Adding More Nodes
+
+To create larger clusters, add more Redis services to the docker-compose.yml following the existing pattern and update the `CLUSTER_NODES` environment variable.
+
+### Different Languages
+
+While the setup includes Python testing tools, you can test with any language:
+
+1. **Connect to the Docker network**: `dockerized-redis-cluster_redis-cluster`
+2. **Use cluster node IPs**: `10.0.0.11:7001`, `10.0.0.12:7002`, etc.
+3. **Enable cluster mode** in your Redis client library
+
+
+## 🏛️ Legacy Setup
+
+The original manual setup scripts are preserved in the `legacy/` folder for reference:
+
+- `legacy/create_cluster.sh` - Dynamic cluster creation script  
+- `legacy/delete_cluster.sh` - Cluster cleanup script
+- `legacy/docker-compose.legacy.yml` - Original Docker Compose file
+- `legacy/configs/` - Static Redis configuration files
+
+These tools allowed for creating clusters of various sizes but required manual intervention. The modern automated setup replaces this workflow while maintaining the same core functionality.
+
+## 🙏 Acknowledgments
+
+This project builds upon excellent work from the Redis community:
+
+- **Original inspiration**: [Tommy's Docker Compose Redis Cluster guide](https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/)
+- **Redis documentation**: [Official Redis Cluster Tutorial](https://redis.io/topics/cluster-tutorial)
+- **Community contributions**: Various improvements and modernizations from users
+
+## 📄 License
+
+This project is provided as-is for educational and testing purposes. Please refer to Redis OSS licensing for production use.
+
+---
+
+**Happy Redis clustering! 🎉**
+
+*This setup provides a complete learning environment for Redis OSS clustering. Feel free to experiment, break things, and learn how Redis clusters work in a safe, reproducible environment.*

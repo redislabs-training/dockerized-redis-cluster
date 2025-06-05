@@ -1,0 +1,19 @@
+# Redis Configuration
+REDIS_VERSION=7-alpine
+PYTHON_VERSION=3.11-alpine
+
+# Cluster Configuration
+REPLICAS_PER_MASTER=1
+
+# Different cluster size presets
+# For 3-node cluster (masters only, no replicas):
+# CLUSTER_NODES=10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003
+# REPLICAS_PER_MASTER=0
+
+# For 8-node cluster (4 masters + 4 replicas):
+CLUSTER_NODES=10.0.0.11:7001 10.0.0.12:7002 10.0.0.13:7003 10.0.0.14:7004 10.0.0.15:7005 10.0.0.16:7006 10.0.0.17:7007 10.0.0.18:7008
+
+# Docker Compose Profiles (uncomment the one you want to use)
+# COMPOSE_PROFILES=minimal        # 3 masters only
+COMPOSE_PROFILES=full,init,app    # 6 nodes + auto-init + app
+# COMPOSE_PROFILES=full,init,app,insight  # Everything including Redis Insight GUI 

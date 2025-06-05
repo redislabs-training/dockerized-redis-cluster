@@ -1,0 +1,112 @@
+version: '3'
+
+networks:
+
+  redisclusternet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+
+services:
+
+  redis1:
+    container_name: redis-1
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7001:7001
+    volumes:
+      - ./configs/redis-1.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.11
+
+  redis2:
+    container_name: redis-2
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7002:7002
+    volumes:
+      - ./configs/redis-2.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    depends_on:
+      - redis1
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.12
+
+  redis3:
+    container_name: redis-3
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7003:7003
+    volumes:
+      - ./configs/redis-3.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    depends_on:
+      - redis2
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.13
+  
+  redis4:
+    container_name: redis-4
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7004:7004
+    volumes:
+      - ./configs/redis-4.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.14
+
+  redis5:
+    container_name: redis-5
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7005:7005
+    volumes:
+      - ./configs/redis-5.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    depends_on:
+      - redis1
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.15
+
+  redis6:
+    container_name: redis-6
+    image: redis:${REDIS_VER}
+    ports: 
+      - 7006:7006
+    volumes:
+      - ./configs/redis-6.conf:/etc/redis/redis.conf
+    command: 
+      - redis-server
+      - /etc/redis/redis.conf
+    depends_on:
+      - redis2
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.16
+
+  app:
+    image: python:3.8-alpine3.10
+    volumes:
+      - ./app:/usr/local/cluster-tester:z
+    entrypoint: /usr/local/cluster-tester/docker-entrypoint.sh
+    networks:
+      redisclusternet:
+        ipv4_address: 10.0.0.20

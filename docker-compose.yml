@@ -1,112 +1,282 @@
-version: '3'
-
 networks:
-
-  redisclusternet:
+  redis-cluster:
     driver: bridge
     ipam:
       config:
         - subnet: 10.0.0.0/16
 
-services:
+# Define common service template
+x-redis-common: &redis-common
+  image: redis:${REDIS_VERSION:-7-alpine}
+  restart: unless-stopped
+  sysctls:
+    - net.core.somaxconn=65535
+  volumes:
+    - ./logs:/var/log/redis
+  networks:
+    - redis-cluster
+  healthcheck:
+    test: ["CMD", "redis-cli", "-p", "PORT_PLACEHOLDER", "ping"]
+    interval: 5s
+    timeout: 3s
+    retries: 5
+    start_period: 10s
 
-  redis1:
+services:
+  # Redis Nodes - using profiles for different cluster sizes
+  redis-1:
+    <<: *redis-common
     container_name: redis-1
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7001:7001
-    volumes:
-      - ./configs/redis-1.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
+    hostname: redis-1
+    ports:
+      - "7001:7001"
+    command: >
+      redis-server
+      --port 7001
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-1.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7001", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.11
 
-  redis2:
+  redis-2:
+    <<: *redis-common
     container_name: redis-2
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7002:7002
-    volumes:
-      - ./configs/redis-2.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
-    depends_on:
-      - redis1
+    hostname: redis-2
+    ports:
+      - "7002:7002"
+    command: >
+      redis-server
+      --port 7002
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-2.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7002", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.12
 
-  redis3:
+  redis-3:
+    <<: *redis-common
     container_name: redis-3
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7003:7003
-    volumes:
-      - ./configs/redis-3.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
-    depends_on:
-      - redis2
+    hostname: redis-3
+    ports:
+      - "7003:7003"
+    command: >
+      redis-server
+      --port 7003
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-3.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7003", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.13
-  
-  redis4:
+
+  redis-4:
+    <<: *redis-common
     container_name: redis-4
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7004:7004
-    volumes:
-      - ./configs/redis-4.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
+    hostname: redis-4
+    ports:
+      - "7004:7004"
+    command: >
+      redis-server
+      --port 7004
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-4.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7004", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.14
+    profiles:
+      - full
+      - replicas
 
-  redis5:
+  redis-5:
+    <<: *redis-common
     container_name: redis-5
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7005:7005
-    volumes:
-      - ./configs/redis-5.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
-    depends_on:
-      - redis1
+    hostname: redis-5
+    ports:
+      - "7005:7005"
+    command: >
+      redis-server
+      --port 7005
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-5.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7005", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.15
+    profiles:
+      - full
+      - replicas
 
-  redis6:
+  redis-6:
+    <<: *redis-common
     container_name: redis-6
-    image: redis:${REDIS_VER}
-    ports: 
-      - 7006:7006
-    volumes:
-      - ./configs/redis-6.conf:/etc/redis/redis.conf
-    command: 
-      - redis-server
-      - /etc/redis/redis.conf
-    depends_on:
-      - redis2
+    hostname: redis-6
+    ports:
+      - "7006:7006"
+    command: >
+      redis-server
+      --port 7006
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --appendonly yes
+      --bind 0.0.0.0
+      --protected-mode no
+      --logfile /var/log/redis/redis-6.log
+      --loglevel notice
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7006", "ping"]
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.16
+    profiles:
+      - full
+      - replicas
 
+  # redis-7:
+  #   <<: *redis-common
+  #   container_name: redis-7
+  #   hostname: redis-7
+  #   ports:
+  #     - "7007:7007"
+  #   command: >
+  #     redis-server
+  #     --port 7007
+  #     --cluster-enabled yes
+  #     --cluster-config-file nodes.conf
+  #     --appendonly yes
+  #     --bind 0.0.0.0
+  #     --protected-mode no
+  #     --logfile /var/log/redis/redis-7.log
+  #     --loglevel notice
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "-p", "7007", "ping"]
+  #   networks:
+  #     redis-cluster:
+  #       ipv4_address: 10.0.0.17
+  #   profiles:
+  #     - full
+  #     - replicas
+
+  # redis-8:
+  #   <<: *redis-common
+  #   container_name: redis-8
+  #   hostname: redis-8
+  #   ports:
+  #     - "7008:7008"
+  #   command: >
+  #     redis-server
+  #     --port 7008
+  #     --cluster-enabled yes
+  #     --cluster-config-file nodes.conf
+  #     --appendonly yes
+  #     --bind 0.0.0.0
+  #     --protected-mode no
+  #     --logfile /var/log/redis/redis-8.log
+  #     --loglevel notice
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "-p", "7008", "ping"]
+  #   networks:
+  #     redis-cluster:
+  #       ipv4_address: 10.0.0.18
+  #   profiles:
+  #     - full
+  #     - replicas
+  # Cluster initialization service
+  cluster-init:
+    image: redis:${REDIS_VERSION:-7-alpine}
+    container_name: redis-cluster-init
+    networks:
+      - redis-cluster
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      redis-4:
+        condition: service_healthy
+        required: false
+      redis-5:
+        condition: service_healthy
+        required: false
+      redis-6:
+        condition: service_healthy
+        required: false
+      # redis-7:
+      #   condition: service_healthy
+      #   required: false
+      # redis-8:
+      #   condition: service_healthy
+      #   required: false
+    environment:
+      - CLUSTER_NODES=${CLUSTER_NODES}
+      - REPLICAS_PER_MASTER=${REPLICAS_PER_MASTER:-1}
+    volumes:
+      - ./scripts:/scripts
+    command: /scripts/init-cluster.sh
+    restart: "no"
+    profiles:
+      - init
+
+  # Application container
   app:
-    image: python:3.8-alpine3.10
+    image: python:${PYTHON_VERSION:-3.11-alpine}
+    container_name: redis-cluster-app
+    depends_on:
+      cluster-init:
+        condition: service_completed_successfully
+        required: false
     volumes:
       - ./app:/usr/local/cluster-tester:z
+    working_dir: /usr/local/cluster-tester
     entrypoint: /usr/local/cluster-tester/docker-entrypoint.sh
     networks:
-      redisclusternet:
+      redis-cluster:
         ipv4_address: 10.0.0.20
+    profiles:
+      - app
+
+  # Optional: Redis Insight for GUI management
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "8001:8001"
+    networks:
+      - redis-cluster
+    profiles:
+      - insight 
