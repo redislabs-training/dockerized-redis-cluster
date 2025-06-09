@@ -156,31 +156,6 @@ docker-compose restart app           # Restart test container
 docker-compose restart redis-1       # Restart specific Redis node
 ```
 
-## 🎯 What Makes This Setup Better
-
-### Before vs After
-
-**Old Manual Workflow:**
-1. Start containers manually
-2. Wait and guess when they're ready
-3. Run complex `redis-cli` cluster creation commands
-4. Manually manage dependencies and errors
-5. No standardized testing
-
-**Current Automated Workflow:**
-1. Single command: `COMPOSE_PROFILES=full,init,app docker-compose up -d`  
-2. Everything ready automatically with health checks
-3. Comprehensive testing tools included
-
-### Key Benefits
-
-✅ **Zero Manual Steps** - Fully automated cluster creation  
-✅ **Reliable Startup** - Health checks ensure proper initialization order  
-✅ **Flexible Configuration** - Profile-based deployment for different needs  
-✅ **Comprehensive Testing** - Ready-made test suite for learning  
-✅ **Modern Practices** - Latest Redis and Docker Compose features  
-✅ **Production-Ready** - Proper logging, monitoring, and error handling  
-✅ **Developer-Friendly** - Clear feedback and simple commands  
 
 ## 🔍 Troubleshooting
 
@@ -269,33 +244,6 @@ command: >
 
 To create larger clusters, add more Redis services to the docker-compose.yml following the existing pattern and update the `CLUSTER_NODES` environment variable.
 
-### Different Languages
-
-While the setup includes Python testing tools, you can test with any language:
-
-1. **Connect to the Docker network**: `dockerized-redis-cluster_redis-cluster`
-2. **Use cluster node IPs**: `10.0.0.11:7001`, `10.0.0.12:7002`, etc.
-3. **Enable cluster mode** in your Redis client library
-
-
-## 🏛️ Legacy Setup
-
-The original manual setup scripts are preserved in the `legacy/` folder for reference:
-
-- `legacy/create_cluster.sh` - Dynamic cluster creation script  
-- `legacy/delete_cluster.sh` - Cluster cleanup script
-- `legacy/docker-compose.legacy.yml` - Original Docker Compose file
-- `legacy/configs/` - Static Redis configuration files
-
-These tools allowed for creating clusters of various sizes but required manual intervention. The modern automated setup replaces this workflow while maintaining the same core functionality.
-
-## 🙏 Acknowledgments
-
-This project builds upon excellent work from the Redis community:
-
-- **Original inspiration**: [Tommy's Docker Compose Redis Cluster guide](https://itsmetommy.com/2018/05/24/docker-compose-redis-cluster/)
-- **Redis documentation**: [Official Redis Cluster Tutorial](https://redis.io/topics/cluster-tutorial)
-- **Community contributions**: Various improvements and modernizations from users
 
 ## 📄 License
 
